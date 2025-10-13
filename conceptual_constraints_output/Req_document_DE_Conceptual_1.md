@@ -1,17 +1,18 @@
+_____________________________________________
+## *Author*: AAVA
+## *Created on*:   
+## *Description*: Comprehensive conceptual data model for enterprise business reporting and analytics system
+## *Version*: 1 
+## *Updated on*: 
+_____________________________________________
+
 # Conceptual Data Model
 
-## 1. Metadata
-- **Author:** AAVA
-- **Created on:** 
-- **Description:** Comprehensive conceptual data model for enterprise business reporting and analytics system
-- **Version:** 1
-- **Updated on:** 
-
-## 2. Domain Overview
+## 1. Domain Overview
 
 This conceptual data model represents a comprehensive enterprise business reporting system designed to support analytics and reporting across multiple business domains. The model encompasses core business entities including customer management, product catalog, sales transactions, financial data, human resources, and operational metrics. The design supports multi-dimensional analysis capabilities for business intelligence, enabling stakeholders to analyze performance across various dimensions such as time, geography, product lines, and customer segments. The model is structured to facilitate both operational reporting and strategic decision-making through integrated data relationships and comprehensive attribute coverage.
 
-## 3. List of Entity Names
+## 2. List of Entity Names
 
 1. **Customer** - Represents individual and corporate customers who purchase products or services
 2. **Product** - Contains information about products and services offered by the organization
@@ -29,7 +30,7 @@ This conceptual data model represents a comprehensive enterprise business report
 14. **Channel** - Sales and distribution channels
 15. **Category** - Product categorization and classification hierarchy
 
-## 4. List of Attributes for Each Entity
+## 3. List of Attributes for Each Entity
 
 ### Customer
 - Customer Name
@@ -287,7 +288,7 @@ This conceptual data model represents a comprehensive enterprise business report
 - Market Share
 - Competitive Position
 
-## 5. KPI List
+## 4. KPI List
 
 ### Sales KPIs
 - Total Revenue
@@ -349,7 +350,7 @@ This conceptual data model represents a comprehensive enterprise business report
 - Email Open Rate
 - Website Traffic
 
-## 6. Conceptual Data Model Diagram (Tabular Form)
+## 5. Conceptual Data Model Diagram (Tabular Form)
 
 | Parent Entity | Child Entity | Relationship Type | Description |
 |---------------|--------------|-------------------|-------------|
@@ -373,7 +374,7 @@ This conceptual data model represents a comprehensive enterprise business report
 | Financial Account | Sales Transaction | One-to-Many | One account can record multiple transactions |
 | Category | Product | One-to-Many | One category contains multiple products |
 
-## 7. Common Data Elements in Report Requirements
+## 6. Common Data Elements in Report Requirements
 
 ### Temporal Elements
 - Date ranges (daily, weekly, monthly, quarterly, yearly)
