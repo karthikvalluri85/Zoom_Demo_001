@@ -1,0 +1,79 @@
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: 'Analytics_Project'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'Analytics_Project'
+
+# These configurations specify where dbt should look for different types of files.
+# The `model-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/reference/model-configs
+
+# In this example config, we tell dbt to build all models in the example/
+# directory as views. These settings can be overridden in the individual model files
+# using the `{{ config(...) }}` macro.
+models:
+  Analytics_Project:
+    # Config indicated by + and applies to all files under models/example/
+    bronze:
+      +materialized: table
+      +on_schema_change: "fail"
+
+# Variables for the project
+vars:
+  # Source database and schema configurations
+  source_database: 'ZOOM_DATABASE'
+  source_schema: 'ZOOM_RAW_SCHEMA'
+  target_schema: 'ZOOM_BRONZE_SCHEMA'
+  
+  # Data quality thresholds
+  data_quality_threshold: 0.95
+  
+  # Audit and logging configurations
+  enable_audit_logging: true
+  audit_table_name: 'bz_audit_log'
+  
+  # Processing configurations
+  batch_size: 10000
+  max_retries: 3
+
+# Quoting configuration
+quoting:
+  database: false
+  schema: false
+  identifier: false
+
+# Seeds configuration
+seeds:
+  Analytics_Project:
+    +quote_columns: false
+
+# Snapshots configuration
+snapshots:
+  Analytics_Project:
+    +target_schema: snapshots
+    +strategy: timestamp
+    +updated_at: updated_at
+
+# Tests configuration
+tests:
+  Analytics_Project:
+    +store_failures: true
+    +severity: warn
