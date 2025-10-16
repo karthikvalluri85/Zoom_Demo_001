@@ -1,9 +1,9 @@
 _____________________________________________
 -- *Author*: AAVA
--- *Created on*: 2024-12-19
+-- *Created on*: 
 -- *Description*: Bronze Physical Data Model for Zoom Platform Analytics System following Snowflake SQL standards
 -- *Version*: 1
--- *Updated on*: 2024-12-19
+-- *Updated on*: 
 _____________________________________________
 
 -- =====================================================
