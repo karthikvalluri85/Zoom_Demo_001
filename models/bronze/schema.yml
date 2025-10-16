@@ -1,0 +1,350 @@
+version: 2
+
+sources:
+  - name: zoom_raw
+    description: "Raw data from Zoom platform ingested into the raw schema"
+    tables:
+      - name: MEETINGS
+        description: "Raw meeting data from Zoom platform"
+        columns:
+          - name: MEETING_ID
+            description: "Unique identifier for each meeting"
+          - name: HOST_ID
+            description: "Identifier of the meeting host"
+          - name: MEETING_TOPIC
+            description: "Topic or title of the meeting"
+          - name: START_TIME
+            description: "Meeting start timestamp"
+          - name: END_TIME
+            description: "Meeting end timestamp"
+          - name: DURATION_MINUTES
+            description: "Duration of meeting in minutes"
+          - name: LOAD_TIMESTAMP
+            description: "Timestamp when data was loaded"
+          - name: UPDATE_TIMESTAMP
+            description: "Timestamp when data was last updated"
+          - name: SOURCE_SYSTEM
+            description: "Source system identifier"
+            
+      - name: USERS
+        description: "Raw user data from Zoom platform"
+        columns:
+          - name: USER_ID
+            description: "Unique identifier for each user"
+          - name: USER_NAME
+            description: "Display name of the user"
+          - name: EMAIL
+            description: "Email address of the user"
+          - name: COMPANY
+            description: "Company name associated with user"
+          - name: PLAN_TYPE
+            description: "Zoom plan type for the user"
+          - name: LOAD_TIMESTAMP
+            description: "Timestamp when data was loaded"
+          - name: UPDATE_TIMESTAMP
+            description: "Timestamp when data was last updated"
+          - name: SOURCE_SYSTEM
+            description: "Source system identifier"
+            
+      - name: PARTICIPANTS
+        description: "Raw participant data from Zoom meetings"
+        columns:
+          - name: PARTICIPANT_ID
+            description: "Unique identifier for each participant session"
+          - name: MEETING_ID
+            description: "Reference to meeting identifier"
+          - name: USER_ID
+            description: "Reference to user identifier"
+          - name: JOIN_TIME
+            description: "Timestamp when participant joined"
+          - name: LEAVE_TIME
+            description: "Timestamp when participant left"
+          - name: LOAD_TIMESTAMP
+            description: "Timestamp when data was loaded"
+          - name: UPDATE_TIMESTAMP
+            description: "Timestamp when data was last updated"
+          - name: SOURCE_SYSTEM
+            description: "Source system identifier"
+            
+      - name: LICENSES
+        description: "Raw license data from Zoom platform"
+        columns:
+          - name: LICENSE_ID
+            description: "Unique identifier for each license"
+          - name: ASSIGNED_TO_USER_ID
+            description: "User ID to whom license is assigned"
+          - name: LICENSE_TYPE
+            description: "Type of Zoom license"
+          - name: START_DATE
+            description: "License start date"
+          - name: END_DATE
+            description: "License end date"
+          - name: LOAD_TIMESTAMP
+            description: "Timestamp when data was loaded"
+          - name: UPDATE_TIMESTAMP
+            description: "Timestamp when data was last updated"
+          - name: SOURCE_SYSTEM
+            description: "Source system identifier"
+            
+      - name: SUPPORT_TICKETS
+        description: "Raw support ticket data from Zoom platform"
+        columns:
+          - name: TICKET_ID
+            description: "Unique identifier for each support ticket"
+          - name: USER_ID
+            description: "User ID who created the ticket"
+          - name: TICKET_TYPE
+            description: "Type or category of support ticket"
+          - name: OPEN_DATE
+            description: "Date when ticket was opened"
+          - name: RESOLUTION_STATUS
+            description: "Current status of ticket resolution"
+          - name: LOAD_TIMESTAMP
+            description: "Timestamp when data was loaded"
+          - name: UPDATE_TIMESTAMP
+            description: "Timestamp when data was last updated"
+          - name: SOURCE_SYSTEM
+            description: "Source system identifier"
+            
+      - name: BILLING_EVENTS
+        description: "Raw billing event data from Zoom platform"
+        columns:
+          - name: EVENT_ID
+            description: "Unique identifier for each billing event"
+          - name: USER_ID
+            description: "User ID associated with billing event"
+          - name: EVENT_TYPE
+            description: "Type of billing event"
+          - name: EVENT_DATE
+            description: "Date of billing event"
+          - name: AMOUNT
+            description: "Amount associated with billing event"
+          - name: LOAD_TIMESTAMP
+            description: "Timestamp when data was loaded"
+          - name: UPDATE_TIMESTAMP
+            description: "Timestamp when data was last updated"
+          - name: SOURCE_SYSTEM
+            description: "Source system identifier"
+            
+      - name: WEBINARS
+        description: "Raw webinar data from Zoom platform"
+        columns:
+          - name: WEBINAR_ID
+            description: "Unique identifier for each webinar"
+          - name: HOST_ID
+            description: "Identifier of the webinar host"
+          - name: WEBINAR_TOPIC
+            description: "Topic or title of the webinar"
+          - name: START_TIME
+            description: "Webinar start timestamp"
+          - name: END_TIME
+            description: "Webinar end timestamp"
+          - name: REGISTRANTS
+            description: "Number of registered participants"
+          - name: LOAD_TIMESTAMP
+            description: "Timestamp when data was loaded"
+          - name: UPDATE_TIMESTAMP
+            description: "Timestamp when data was last updated"
+          - name: SOURCE_SYSTEM
+            description: "Source system identifier"
+            
+      - name: FEATURE_USAGE
+        description: "Raw feature usage data from Zoom platform"
+        columns:
+          - name: USAGE_ID
+            description: "Unique identifier for each usage record"
+          - name: MEETING_ID
+            description: "Reference to meeting where feature was used"
+          - name: FEATURE_NAME
+            description: "Name of the feature used"
+          - name: USAGE_DATE
+            description: "Date when feature was used"
+          - name: USAGE_COUNT
+            description: "Number of times feature was used"
+          - name: LOAD_TIMESTAMP
+            description: "Timestamp when data was loaded"
+          - name: UPDATE_TIMESTAMP
+            description: "Timestamp when data was last updated"
+          - name: SOURCE_SYSTEM
+            description: "Source system identifier"
+
+models:
+  - name: bz_audit_log
+    description: "Bronze layer audit table for tracking data processing and lineage"
+    columns:
+      - name: record_id
+        description: "Auto-incrementing unique identifier for audit records"
+      - name: source_table
+        description: "Name of the source table being processed"
+      - name: load_timestamp
+        description: "Timestamp when data processing occurred"
+      - name: processed_by
+        description: "Identifier of the process or user that performed the operation"
+      - name: processing_time
+        description: "Time taken to process the data in seconds"
+      - name: status
+        description: "Status of the processing operation (STARTED, COMPLETED, FAILED)"
+        
+  - name: bz_meetings
+    description: "Bronze layer table containing cleaned and validated meeting data"
+    columns:
+      - name: meeting_id
+        description: "Unique identifier for each meeting session"
+      - name: host_id
+        description: "Identifier of the meeting host user"
+      - name: meeting_topic
+        description: "Topic or title of the meeting"
+      - name: start_time
+        description: "Meeting start timestamp"
+      - name: end_time
+        description: "Meeting end timestamp"
+      - name: duration_minutes
+        description: "Duration of meeting in minutes"
+      - name: load_timestamp
+        description: "Timestamp when record was loaded into bronze layer"
+      - name: update_timestamp
+        description: "Timestamp when record was last updated"
+      - name: source_system
+        description: "Source system identifier for data lineage"
+        
+  - name: bz_users
+    description: "Bronze layer table containing cleaned and validated user data"
+    columns:
+      - name: user_id
+        description: "Unique identifier for each user in the system"
+      - name: user_name
+        description: "Display name of the user"
+      - name: email
+        description: "Primary email address for user account"
+      - name: company
+        description: "Company name associated with user"
+      - name: plan_type
+        description: "Zoom plan type for the user"
+      - name: load_timestamp
+        description: "Timestamp when record was loaded into bronze layer"
+      - name: update_timestamp
+        description: "Timestamp when record was last updated"
+      - name: source_system
+        description: "Source system identifier for data lineage"
+        
+  - name: bz_participants
+    description: "Bronze layer table containing cleaned and validated participant data"
+    columns:
+      - name: participant_id
+        description: "Unique identifier for each participant session"
+      - name: meeting_id
+        description: "Foreign reference to meeting identifier"
+      - name: user_id
+        description: "Foreign reference to user identifier"
+      - name: join_time
+        description: "Timestamp when participant joined meeting"
+      - name: leave_time
+        description: "Timestamp when participant left meeting"
+      - name: load_timestamp
+        description: "Timestamp when record was loaded into bronze layer"
+      - name: update_timestamp
+        description: "Timestamp when record was last updated"
+      - name: source_system
+        description: "Source system identifier for data lineage"
+        
+  - name: bz_licenses
+    description: "Bronze layer table containing cleaned and validated license data"
+    columns:
+      - name: license_id
+        description: "Unique identifier for each license"
+      - name: assigned_to_user_id
+        description: "User ID to whom license is assigned"
+      - name: license_type
+        description: "Type of Zoom license"
+      - name: start_date
+        description: "License start date"
+      - name: end_date
+        description: "License end date"
+      - name: load_timestamp
+        description: "Timestamp when record was loaded into bronze layer"
+      - name: update_timestamp
+        description: "Timestamp when record was last updated"
+      - name: source_system
+        description: "Source system identifier for data lineage"
+        
+  - name: bz_support_tickets
+    description: "Bronze layer table containing cleaned and validated support ticket data"
+    columns:
+      - name: ticket_id
+        description: "Unique identifier for each support ticket"
+      - name: user_id
+        description: "User ID who created the ticket"
+      - name: ticket_type
+        description: "Type or category of support ticket"
+      - name: open_date
+        description: "Date when ticket was opened"
+      - name: resolution_status
+        description: "Current status of ticket resolution"
+      - name: load_timestamp
+        description: "Timestamp when record was loaded into bronze layer"
+      - name: update_timestamp
+        description: "Timestamp when record was last updated"
+      - name: source_system
+        description: "Source system identifier for data lineage"
+        
+  - name: bz_billing_events
+    description: "Bronze layer table containing cleaned and validated billing event data"
+    columns:
+      - name: event_id
+        description: "Unique identifier for each billing event"
+      - name: user_id
+        description: "User ID associated with billing event"
+      - name: event_type
+        description: "Type of billing event"
+      - name: event_date
+        description: "Date of billing event"
+      - name: amount
+        description: "Amount associated with billing event"
+      - name: load_timestamp
+        description: "Timestamp when record was loaded into bronze layer"
+      - name: update_timestamp
+        description: "Timestamp when record was last updated"
+      - name: source_system
+        description: "Source system identifier for data lineage"
+        
+  - name: bz_webinars
+    description: "Bronze layer table containing cleaned and validated webinar data"
+    columns:
+      - name: webinar_id
+        description: "Unique identifier for each webinar"
+      - name: host_id
+        description: "Identifier of the webinar host"
+      - name: webinar_topic
+        description: "Topic or title of the webinar"
+      - name: start_time
+        description: "Webinar start timestamp"
+      - name: end_time
+        description: "Webinar end timestamp"
+      - name: registrants
+        description: "Number of registered participants"
+      - name: load_timestamp
+        description: "Timestamp when record was loaded into bronze layer"
+      - name: update_timestamp
+        description: "Timestamp when record was last updated"
+      - name: source_system
+        description: "Source system identifier for data lineage"
+        
+  - name: bz_feature_usage
+    description: "Bronze layer table containing cleaned and validated feature usage data"
+    columns:
+      - name: usage_id
+        description: "Unique identifier for each usage record"
+      - name: meeting_id
+        description: "Reference to meeting where feature was used"
+      - name: feature_name
+        description: "Name of the feature used"
+      - name: usage_date
+        description: "Date when feature was used"
+      - name: usage_count
+        description: "Number of times feature was used"
+      - name: load_timestamp
+        description: "Timestamp when record was loaded into bronze layer"
+      - name: update_timestamp
+        description: "Timestamp when record was last updated"
+      - name: source_system
+        description: "Source system identifier for data lineage"
