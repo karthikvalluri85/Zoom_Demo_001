@@ -1,0 +1,313 @@
+{
+  "schema_name": "ZOOM_RAW_SCHEMA",
+  "database_name": "ZOOM_DATABASE",
+  "extraction_timestamp": "2024-12-19",
+  "total_tables": 8,
+  "total_views": 0,
+  "tables_and_views": {
+    "MEETINGS": {
+      "type": "TABLE",
+      "columns": [
+        {
+          "name": "UPDATE_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "MEETING_TOPIC",
+          "type": "TEXT"
+        },
+        {
+          "name": "DURATION_MINUTES",
+          "type": "NUMBER"
+        },
+        {
+          "name": "LOAD_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "MEETING_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "SOURCE_SYSTEM",
+          "type": "TEXT"
+        },
+        {
+          "name": "END_TIME",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "HOST_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "START_TIME",
+          "type": "TIMESTAMP_NTZ"
+        }
+      ]
+    },
+    "LICENSES": {
+      "type": "TABLE",
+      "columns": [
+        {
+          "name": "LOAD_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "LICENSE_TYPE",
+          "type": "TEXT"
+        },
+        {
+          "name": "END_DATE",
+          "type": "DATE"
+        },
+        {
+          "name": "ASSIGNED_TO_USER_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "LICENSE_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "SOURCE_SYSTEM",
+          "type": "TEXT"
+        },
+        {
+          "name": "UPDATE_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "START_DATE",
+          "type": "DATE"
+        }
+      ]
+    },
+    "SUPPORT_TICKETS": {
+      "type": "TABLE",
+      "columns": [
+        {
+          "name": "RESOLUTION_STATUS",
+          "type": "TEXT"
+        },
+        {
+          "name": "UPDATE_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "TICKET_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "LOAD_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "OPEN_DATE",
+          "type": "DATE"
+        },
+        {
+          "name": "USER_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "SOURCE_SYSTEM",
+          "type": "TEXT"
+        },
+        {
+          "name": "TICKET_TYPE",
+          "type": "TEXT"
+        }
+      ]
+    },
+    "USERS": {
+      "type": "TABLE",
+      "columns": [
+        {
+          "name": "EMAIL",
+          "type": "TEXT"
+        },
+        {
+          "name": "SOURCE_SYSTEM",
+          "type": "TEXT"
+        },
+        {
+          "name": "USER_NAME",
+          "type": "TEXT"
+        },
+        {
+          "name": "LOAD_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "UPDATE_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "USER_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "PLAN_TYPE",
+          "type": "TEXT"
+        },
+        {
+          "name": "COMPANY",
+          "type": "TEXT"
+        }
+      ]
+    },
+    "BILLING_EVENTS": {
+      "type": "TABLE",
+      "columns": [
+        {
+          "name": "SOURCE_SYSTEM",
+          "type": "TEXT"
+        },
+        {
+          "name": "EVENT_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "UPDATE_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "AMOUNT",
+          "type": "NUMBER"
+        },
+        {
+          "name": "EVENT_TYPE",
+          "type": "TEXT"
+        },
+        {
+          "name": "LOAD_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "EVENT_DATE",
+          "type": "DATE"
+        },
+        {
+          "name": "USER_ID",
+          "type": "TEXT"
+        }
+      ]
+    },
+    "PARTICIPANTS": {
+      "type": "TABLE",
+      "columns": [
+        {
+          "name": "UPDATE_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "MEETING_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "SOURCE_SYSTEM",
+          "type": "TEXT"
+        },
+        {
+          "name": "LOAD_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "LEAVE_TIME",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "JOIN_TIME",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "USER_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "PARTICIPANT_ID",
+          "type": "TEXT"
+        }
+      ]
+    },
+    "WEBINARS": {
+      "type": "TABLE",
+      "columns": [
+        {
+          "name": "END_TIME",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "SOURCE_SYSTEM",
+          "type": "TEXT"
+        },
+        {
+          "name": "WEBINAR_TOPIC",
+          "type": "TEXT"
+        },
+        {
+          "name": "START_TIME",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "WEBINAR_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "LOAD_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "REGISTRANTS",
+          "type": "NUMBER"
+        },
+        {
+          "name": "HOST_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "UPDATE_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        }
+      ]
+    },
+    "FEATURE_USAGE": {
+      "type": "TABLE",
+      "columns": [
+        {
+          "name": "FEATURE_NAME",
+          "type": "TEXT"
+        },
+        {
+          "name": "MEETING_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "USAGE_DATE",
+          "type": "DATE"
+        },
+        {
+          "name": "UPDATE_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "SOURCE_SYSTEM",
+          "type": "TEXT"
+        },
+        {
+          "name": "USAGE_ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "LOAD_TIMESTAMP",
+          "type": "TIMESTAMP_NTZ"
+        },
+        {
+          "name": "USAGE_COUNT",
+          "type": "NUMBER"
+        }
+      ]
+    }
+  }
+}
