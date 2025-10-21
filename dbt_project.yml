@@ -20,3 +20,4 @@ models:
   Analytics_Project:
     bronze:
       +materialized: table
+      +on_schema_change: "fail"
