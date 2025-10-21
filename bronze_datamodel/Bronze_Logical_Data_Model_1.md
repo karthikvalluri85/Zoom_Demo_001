@@ -1,168 +1,186 @@
+_____________________________________________
+## *Author*: AAVA
+## *Created on*: 
+## *Description*: Bronze Layer Logical Data Model for Zoom Platform Analytics System with comprehensive PII classification, audit design, and conceptual data model diagram
+## *Version*: 1
+## *Updated on*: 
+_____________________________________________
+
 # Bronze Layer Logical Data Model for Zoom Platform Analytics System
 
----
+## 1. PII Classification
 
-## 1. Metadata
+| Column Name | Table | PII Classification | Reason for Classification |
+|-------------|-------|-------------------|---------------------------|
+| email | Bz_Users | Yes | Email addresses are personally identifiable information that can be used to directly contact and identify individuals |
+| user_name | Bz_Users | Yes | User names can be used to identify specific individuals within the system and may contain personal information |
+| company | Bz_Users | Yes | Company information can reveal employment details and organizational affiliations of users |
+| host_id | Bz_Meetings, Bz_Webinars | Yes | Host IDs are linked to specific users and can be used to identify meeting/webinar organizers |
+| user_id | Bz_Support_Tickets, Bz_Billing_Events, Bz_Participants | Yes | User IDs are unique identifiers that directly link to individual users and their activities |
+| assigned_to_user_id | Bz_Licenses | Yes | This field directly identifies which user a license is assigned to, making it personally identifiable |
+| participant_id | Bz_Participants | Yes | Participant IDs can be used to track individual participation patterns and identify specific users |
+| meeting_id | Bz_Participants, Bz_Feature_Usage | Potentially | Meeting IDs may contain information that could indirectly identify participants or meeting content |
 
-- **Author:** AAVA
-- **Version:** 1
-- **Description:** This document presents the comprehensive Bronze Layer Logical Data Model for the Zoom Platform Analytics System. It mirrors the source raw data structure from the zoom_raw_schema into the zoom_bronze_schema with the required transformations, metadata additions, PII classification, audit table design, and a conceptual data model diagram.
+## 2. Bronze Layer Logical Model
 
----
+### 2.1 Bz_Meetings
+**Description:** Bronze layer table containing meeting information mirrored from raw meetings data
 
-## 2. PII Classification and Reasons
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| meeting_topic | TEXT | Subject or descriptive title of the meeting session |
+| duration_minutes | NUMBER | Total duration of the meeting measured in minutes |
+| end_time | TIMESTAMP_NTZ | Timestamp indicating when the meeting concluded |
+| start_time | TIMESTAMP_NTZ | Timestamp indicating when the meeting began |
+| load_timestamp | TIMESTAMP_NTZ | System timestamp when the record was loaded into bronze layer |
+| update_timestamp | TIMESTAMP_NTZ | System timestamp when the record was last modified |
+| source_system | TEXT | Identifier of the source system from which data originated |
 
-| Column Name       | Table           | PII Classification | Reason for Classification                                  |
-|-------------------|-----------------|--------------------|------------------------------------------------------------|
-| email             | Bz_Users        | Yes                | Email is personally identifiable information used to contact or identify a user.
-|
-| user_name         | Bz_Users        | Yes                | Usernames can identify individuals uniquely in the system.
-|
-| host_id           | Bz_Meetings, Bz_Webinars | Yes        | Host ID links to a user and can identify the host of meetings/webinars.
-|
-| user_id           | Multiple tables | Yes                | User ID is a unique identifier for users, considered PII.
-|
-| assigned_to_user_id| Bz_Licenses     | Yes                | Identifies the user assigned to a license.
-|
-| participant_id    | Bz_Participants | Yes                | Identifies individual participants uniquely.
-|
-| registrants       | Bz_Webinars     | Yes                | Number of registrants may not be PII, but if it contains user details, it is PII.
-|
-| company           | Bz_Users        | Yes                | Company name can be sensitive depending on context.
+### 2.2 Bz_Licenses
+**Description:** Bronze layer table containing license assignment and management information
 
-Other fields such as timestamps, event types, counts, and metadata are not PII.
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| license_type | TEXT | Category or tier of the license (Basic, Pro, Enterprise) |
+| end_date | DATE | Expiration date of the license assignment |
+| start_date | DATE | Activation date of the license assignment |
+| load_timestamp | TIMESTAMP_NTZ | System timestamp when the record was loaded into bronze layer |
+| update_timestamp | TIMESTAMP_NTZ | System timestamp when the record was last modified |
+| source_system | TEXT | Identifier of the source system from which data originated |
 
----
+### 2.3 Bz_Support_Tickets
+**Description:** Bronze layer table containing customer support ticket information
 
-## 3. Bronze Layer Logical Data Model
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| resolution_status | TEXT | Current status of the support ticket resolution process |
+| open_date | DATE | Date when the support ticket was initially created |
+| ticket_type | TEXT | Category classification of the support request |
+| load_timestamp | TIMESTAMP_NTZ | System timestamp when the record was loaded into bronze layer |
+| update_timestamp | TIMESTAMP_NTZ | System timestamp when the record was last modified |
+| source_system | TEXT | Identifier of the source system from which data originated |
 
-### 3.1 Bz_Meetings
-| Column Name       | Data Type | Business Description                          |
-|-------------------|-----------|----------------------------------------------|
-| meeting_topic     | string    | Topic or title of the meeting                 |
-| duration_minutes  | integer   | Duration of the meeting in minutes            |
-| end_time          | datetime  | Meeting end timestamp                          |
-| start_time        | datetime  | Meeting start timestamp                        |
-| load_timestamp    | datetime  | Timestamp when the record was loaded          |
-| update_timestamp  | datetime  | Timestamp when the record was last updated    |
-| source_system     | string    | Source system identifier (e.g., Zoom Raw)     |
+### 2.4 Bz_Users
+**Description:** Bronze layer table containing user profile and account information
 
-### 3.2 Bz_Licenses
-| Column Name         | Data Type | Business Description                          |
-|---------------------|-----------|----------------------------------------------|
-| license_type        | string    | Type of license assigned                      |
-| end_date            | date      | License expiration date                        |
-| start_date          | date      | License start date                             |
-| load_timestamp      | datetime  | Timestamp when the record was loaded          |
-| update_timestamp    | datetime  | Timestamp when the record was last updated    |
-| source_system       | string    | Source system identifier (e.g., Zoom Raw)     |
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| email | TEXT | Primary email address associated with the user account |
+| user_name | TEXT | Display name or username for the platform user |
+| plan_type | TEXT | Subscription plan tier assigned to the user |
+| company | TEXT | Organization or company name associated with the user |
+| load_timestamp | TIMESTAMP_NTZ | System timestamp when the record was loaded into bronze layer |
+| update_timestamp | TIMESTAMP_NTZ | System timestamp when the record was last modified |
+| source_system | TEXT | Identifier of the source system from which data originated |
 
-### 3.3 Bz_Support_Tickets
-| Column Name         | Data Type | Business Description                          |
-|---------------------|-----------|----------------------------------------------|
-| resolution_status   | string    | Status of ticket resolution                    |
-| open_date           | datetime  | Date and time when ticket was opened          |
-| ticket_type         | string    | Type/category of support ticket                |
-| load_timestamp      | datetime  | Timestamp when the record was loaded          |
-| update_timestamp    | datetime  | Timestamp when the record was last updated    |
-| source_system       | string    | Source system identifier (e.g., Zoom Raw)     |
+### 2.5 Bz_Billing_Events
+**Description:** Bronze layer table containing financial transaction and billing event information
 
-### 3.4 Bz_Users
-| Column Name         | Data Type | Business Description                          |
-|---------------------|-----------|----------------------------------------------|
-| email               | string    | User's email address                           |
-| user_name           | string    | User's display or login name                   |
-| plan_type           | string    | Subscription plan type of the user             |
-| company             | string    | Company or organization the user belongs to   |
-| load_timestamp      | datetime  | Timestamp when the record was loaded          |
-| update_timestamp    | datetime  | Timestamp when the record was last updated    |
-| source_system       | string    | Source system identifier (e.g., Zoom Raw)     |
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| amount | NUMBER | Monetary value associated with the billing transaction |
+| event_type | TEXT | Classification of the billing event (Charge, Refund, Credit, Payment) |
+| event_date | DATE | Date when the billing event occurred |
+| load_timestamp | TIMESTAMP_NTZ | System timestamp when the record was loaded into bronze layer |
+| update_timestamp | TIMESTAMP_NTZ | System timestamp when the record was last modified |
+| source_system | TEXT | Identifier of the source system from which data originated |
 
-### 3.5 Bz_Billing_Events
-| Column Name         | Data Type | Business Description                          |
-|---------------------|-----------|----------------------------------------------|
-| event_id            | string    | Unique identifier for billing event            |
-| amount              | decimal   | Amount charged or credited                      |
-| event_type          | string    | Type of billing event (payment, refund, etc.) |
-| event_date          | datetime  | Date and time of the billing event             |
-| load_timestamp      | datetime  | Timestamp when the record was loaded          |
-| update_timestamp    | datetime  | Timestamp when the record was last updated    |
-| source_system       | string    | Source system identifier (e.g., Zoom Raw)     |
+### 2.6 Bz_Participants
+**Description:** Bronze layer table containing meeting and webinar participation information
 
-### 3.6 Bz_Participants
-| Column Name         | Data Type | Business Description                          |
-|---------------------|-----------|----------------------------------------------|
-| meeting_id          | string    | Identifier of the meeting                       |
-| leave_time          | datetime  | Timestamp when participant left the meeting    |
-| join_time           | datetime  | Timestamp when participant joined the meeting  |
-| load_timestamp      | datetime  | Timestamp when the record was loaded          |
-| update_timestamp    | datetime  | Timestamp when the record was last updated    |
-| source_system       | string    | Source system identifier (e.g., Zoom Raw)     |
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| leave_time | TIMESTAMP_NTZ | Timestamp when the participant exited the session |
+| join_time | TIMESTAMP_NTZ | Timestamp when the participant entered the session |
+| load_timestamp | TIMESTAMP_NTZ | System timestamp when the record was loaded into bronze layer |
+| update_timestamp | TIMESTAMP_NTZ | System timestamp when the record was last modified |
+| source_system | TEXT | Identifier of the source system from which data originated |
 
-### 3.7 Bz_Webinars
-| Column Name         | Data Type | Business Description                          |
-|---------------------|-----------|----------------------------------------------|
-| end_time            | datetime  | Webinar end timestamp                           |
-| webinar_topic       | string    | Topic or title of the webinar                   |
-| start_time          | datetime  | Webinar start timestamp                         |
-| registrants         | integer   | Number of registrants for the webinar          |
-| load_timestamp      | datetime  | Timestamp when the record was loaded          |
-| update_timestamp    | datetime  | Timestamp when the record was last updated    |
-| source_system       | string    | Source system identifier (e.g., Zoom Raw)     |
+### 2.7 Bz_Webinars
+**Description:** Bronze layer table containing webinar event and broadcast information
 
-### 3.8 Bz_Feature_Usage
-| Column Name         | Data Type | Business Description                          |
-|---------------------|-----------|----------------------------------------------|
-| feature_name        | string    | Name of the feature used                        |
-| usage_date          | date      | Date when the feature was used                  |
-| usage_count         | integer   | Number of times the feature was used            |
-| load_timestamp      | datetime  | Timestamp when the record was loaded          |
-| update_timestamp    | datetime  | Timestamp when the record was last updated    |
-| source_system       | string    | Source system identifier (e.g., Zoom Raw)     |
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| end_time | TIMESTAMP_NTZ | Timestamp indicating when the webinar concluded |
+| webinar_topic | TEXT | Subject or descriptive title of the webinar event |
+| start_time | TIMESTAMP_NTZ | Timestamp indicating when the webinar began |
+| registrants | NUMBER | Total number of users registered for the webinar |
+| load_timestamp | TIMESTAMP_NTZ | System timestamp when the record was loaded into bronze layer |
+| update_timestamp | TIMESTAMP_NTZ | System timestamp when the record was last modified |
+| source_system | TEXT | Identifier of the source system from which data originated |
 
----
+### 2.8 Bz_Feature_Usage
+**Description:** Bronze layer table containing platform feature utilization tracking information
 
-## 4. Audit Table Design
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| feature_name | TEXT | Name of the platform feature being tracked |
+| usage_date | DATE | Date when the feature usage occurred |
+| usage_count | NUMBER | Number of times the feature was utilized |
+| load_timestamp | TIMESTAMP_NTZ | System timestamp when the record was loaded into bronze layer |
+| update_timestamp | TIMESTAMP_NTZ | System timestamp when the record was last modified |
+| source_system | TEXT | Identifier of the source system from which data originated |
 
-| Column Name       | Data Type | Business Description                          |
-|-------------------|-----------|----------------------------------------------|
-| record_id         | string    | Unique identifier for the audit record         |
-| source_table      | string    | Name of the source table being audited         |
-| load_timestamp    | datetime  | Timestamp when the record was loaded           |
-| processed_by      | string    | Identifier of the process or user processing   |
-| processing_time   | integer   | Time taken to process the record (in seconds) |
-| status            | string    | Processing status (e.g., success, failure)     |
+## 3. Audit Table Design
 
-Table Name: zoom_bronze_schema.Bz_Audit_Log
+### 3.1 Bz_Audit_Log
+**Description:** Comprehensive audit table for tracking data processing and lineage across all bronze layer tables
 
----
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| record_id | TEXT | Unique identifier for each audit log entry |
+| source_table | TEXT | Name of the bronze layer table being audited |
+| load_timestamp | TIMESTAMP_NTZ | Timestamp when the data processing operation began |
+| processed_by | TEXT | Identifier of the system, process, or user performing the operation |
+| processing_time | NUMBER | Duration of the processing operation measured in milliseconds |
+| status | TEXT | Outcome status of the processing operation (SUCCESS, FAILED, PARTIAL) |
 
-## 5. Conceptual Data Model Diagram (Block Format)
+## 4. Conceptual Data Model Diagram
+
+### 4.1 Block Diagram Representation
 
 ```
-+----------------+       +----------------+       +----------------+
-|    Bz_Users    |<----->|  Bz_Meetings   |<----->| Bz_Participants|
-+----------------+       +----------------+       +----------------+
-       ^                        ^                         ^
-       |                        |                         |
-+----------------+       +----------------+       +----------------+
-| Bz_Licenses    |       |  Bz_Webinars   |       | Bz_Feature_Usage|
-+----------------+       +----------------+       +----------------+
-       ^                        ^                         
-       |                        |                         
-+----------------+       +----------------+       +----------------+
-| Bz_Support_Tickets|    | Bz_Billing_Events|     | Bz_Audit_Log    |
-+----------------+       +----------------+       +----------------+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Bz_Users      │────│  Bz_Meetings    │────│ Bz_Participants │
+│                 │    │                 │    │                 │
+│ - email         │    │ - meeting_topic │    │ - join_time     │
+│ - user_name     │    │ - duration_min  │    │ - leave_time    │
+│ - plan_type     │    │ - start_time    │    │ - load_timestamp│
+│ - company       │    │ - end_time      │    │ - update_timestamp│
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Bz_Licenses    │    │  Bz_Webinars    │    │Bz_Feature_Usage │
+│                 │    │                 │    │                 │
+│ - license_type  │    │ - webinar_topic │    │ - feature_name  │
+│ - start_date    │    │ - start_time    │    │ - usage_date    │
+│ - end_date      │    │ - end_time      │    │ - usage_count   │
+│ - load_timestamp│    │ - registrants   │    │ - load_timestamp│
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │
+         │                       │
+┌─────────────────┐    ┌─────────────────┐
+│Bz_Support_Tickets│   │Bz_Billing_Events│
+│                 │    │                 │
+│ - ticket_type   │    │ - amount        │
+│ - open_date     │    │ - event_type    │
+│ - resolution_   │    │ - event_date    │
+│   status        │    │ - load_timestamp│
+└─────────────────┘    └─────────────────┘
 ```
 
-- Relationships:
-  - Bz_Users linked to Bz_Meetings and Bz_Webinars via host_id/user_id
-  - Bz_Participants linked to Bz_Meetings via meeting_id
-  - Bz_Feature_Usage linked to Bz_Meetings via meeting_id
-  - Bz_Licenses linked to Bz_Users via assigned_to_user_id
-  - Bz_Support_Tickets linked to Bz_Users via user_id
-  - Bz_Billing_Events linked to Bz_Users via user_id
+### 4.2 Table Relationships
 
----
+| Source Table | Target Table | Connection Key Field | Relationship Type |
+|--------------|--------------|---------------------|-------------------|
+| Bz_Users | Bz_Meetings | user_name → host_id | One-to-Many |
+| Bz_Users | Bz_Webinars | user_name → host_id | One-to-Many |
+| Bz_Users | Bz_Licenses | user_name → assigned_to_user_id | One-to-Many |
+| Bz_Users | Bz_Support_Tickets | user_name → user_id | One-to-Many |
+| Bz_Users | Bz_Billing_Events | user_name → user_id | One-to-Many |
+| Bz_Meetings | Bz_Participants | meeting_topic → meeting_id | One-to-Many |
+| Bz_Meetings | Bz_Feature_Usage | meeting_topic → meeting_id | One-to-Many |
+| Bz_Participants | Bz_Users | participant_id → user_id | Many-to-One |
 
-*End of Bronze Layer Logical Data Model Document.*
+**Note:** All bronze layer tables maintain referential integrity through business key relationships rather than technical foreign keys, following medallion architecture principles for the bronze layer.
