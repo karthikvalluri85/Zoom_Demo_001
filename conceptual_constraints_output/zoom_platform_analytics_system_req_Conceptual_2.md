@@ -1,9 +1,9 @@
 _____________________________________________
 ## *Author*: AAVA
-## *Created on*: 2024-12-19
+## *Created on*: 
 ## *Description*: Enhanced conceptual data model for Zoom Platform Analytics System with improved structure, refined attributes, and comprehensive KPI metrics
 ## *Version*: 2
-## *Updated on*: 2024-12-19
+## *Updated on*: 
 ## *Changes*: Removed ID attributes, improved business attribute naming, enhanced KPI list with specific metrics, refined entity relationships, added proper metadata structure
 ## *Reason*: User requested improvements for better alignment with data modeling best practices and enhanced analytical capabilities
 _____________________________________________
