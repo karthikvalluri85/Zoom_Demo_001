@@ -1,69 +1,55 @@
-{{ config(
+{{
+  config(
     materialized='table',
-    pre_hook="INSERT INTO {{ ref('bz_audit_log') }} (source_table, load_timestamp, processed_by, processing_time, status) SELECT 'bz_billing_events', CURRENT_TIMESTAMP(), 'DBT_PROCESS', 0, 'STARTED' WHERE '{{ this.name }}' != 'bz_audit_log'",
-    post_hook="INSERT INTO {{ ref('bz_audit_log') }} (source_table, load_timestamp, processed_by, processing_time, status) SELECT 'bz_billing_events', CURRENT_TIMESTAMP(), 'DBT_PROCESS', DATEDIFF('second', (SELECT MAX(load_timestamp) FROM {{ ref('bz_audit_log') }} WHERE source_table = 'bz_billing_events' AND status = 'STARTED'), CURRENT_TIMESTAMP()), 'COMPLETED' WHERE '{{ this.name }}' != 'bz_audit_log'"
-) }}
+    pre_hook="{% if this.name != 'bz_audit_log' %}INSERT INTO {{ ref('bz_audit_log') }} (source_table, load_timestamp, processed_by, processing_time, status) VALUES ('bz_billing_events', CURRENT_TIMESTAMP(), 'DBT_BRONZE_PIPELINE', 0, 'STARTED'){% endif %}",
+    post_hook="{% if this.name != 'bz_audit_log' %}INSERT INTO {{ ref('bz_audit_log') }} (source_table, load_timestamp, processed_by, processing_time, status) VALUES ('bz_billing_events', CURRENT_TIMESTAMP(), 'DBT_BRONZE_PIPELINE', DATEDIFF('millisecond', (SELECT MAX(load_timestamp) FROM {{ ref('bz_audit_log') }} WHERE source_table = 'bz_billing_events' AND status = 'STARTED'), CURRENT_TIMESTAMP()), 'SUCCESS'){% endif %}"
+  )
+}}
 
--- Bronze layer transformation for billing events data
--- This model performs 1:1 mapping from raw to bronze layer with data validation
+-- Bronze Layer Billing Events Model
+-- Purpose: 1:1 mapping from raw billing events data to bronze layer with audit information
+-- Source: ZOOM_RAW_SCHEMA.BILLING_EVENTS
+-- Target: ZOOM_BRONZE_SCHEMA.BZ_BILLING_EVENTS
 
-WITH source_data AS (
+WITH source_billing_events AS (
     SELECT 
-        -- Primary identifiers
-        EVENT_ID,
-        USER_ID,
+        -- Business attributes - direct 1:1 mapping from source
+        amount,
+        event_type,
+        event_date,
+        event_id,
+        user_id,
         
-        -- Event details
-        EVENT_TYPE,
-        EVENT_DATE,
-        AMOUNT,
+        -- Metadata columns - preserved from source
+        source_system,
+        load_timestamp,
+        update_timestamp
         
-        -- Metadata columns
-        LOAD_TIMESTAMP,
-        UPDATE_TIMESTAMP,
-        SOURCE_SYSTEM
-        
-    FROM {{ source('zoom_raw', 'BILLING_EVENTS') }}
+    FROM {{ source('zoom_raw', 'billing_events') }}
+    
+    -- Data quality filter - exclude records with null event_id (business key)
+    WHERE event_id IS NOT NULL
 ),
 
-validated_data AS (
+final_billing_events AS (
     SELECT 
-        -- Data validation and cleansing
-        CASE 
-            WHEN EVENT_ID IS NULL OR TRIM(EVENT_ID) = '' THEN 'UNKNOWN_EVENT'
-            ELSE TRIM(EVENT_ID)
-        END as event_id,
+        -- Business columns
+        amount,
+        event_type,
+        event_date,
+        event_id,
+        user_id,
         
-        CASE 
-            WHEN USER_ID IS NULL OR TRIM(USER_ID) = '' THEN 'UNKNOWN_USER'
-            ELSE TRIM(USER_ID)
-        END as user_id,
+        -- Audit and metadata columns
+        load_timestamp,
+        update_timestamp,
+        source_system
         
-        COALESCE(TRIM(EVENT_TYPE), 'Unknown Event') as event_type,
-        
-        -- Date validation
-        CASE 
-            WHEN EVENT_DATE IS NULL THEN CURRENT_DATE()
-            ELSE EVENT_DATE
-        END as event_date,
-        
-        COALESCE(AMOUNT, 0) as amount,
-        
-        -- Metadata with defaults
-        COALESCE(LOAD_TIMESTAMP, CURRENT_TIMESTAMP()) as load_timestamp,
-        COALESCE(UPDATE_TIMESTAMP, CURRENT_TIMESTAMP()) as update_timestamp,
-        COALESCE(TRIM(SOURCE_SYSTEM), 'ZOOM_PLATFORM') as source_system
-        
-    FROM source_data
+    FROM source_billing_events
 )
 
-SELECT 
-    event_id,
-    user_id,
-    event_type,
-    event_date,
-    amount,
-    load_timestamp,
-    update_timestamp,
-    source_system
-FROM validated_data
+SELECT * FROM final_billing_events
+
+-- Model documentation
+-- This model performs a 1:1 transformation from raw billing events data to bronze layer
+-- Includes data quality filtering and preserves all source metadata
