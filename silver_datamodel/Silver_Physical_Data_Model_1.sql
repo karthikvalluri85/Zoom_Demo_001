@@ -1,9 +1,9 @@
 _____________________________________________
 ## *Author*: AAVA
-## *Created on*: 2024-01-20
+## *Created on*: 
 ## *Description*: Silver Layer Physical Data Model for Zoom Platform Analytics System with enhanced data lineage tracking and Snowflake DDL scripts
 ## *Version*: 1
-## *Updated on*: 2024-01-20
+## *Updated on*: 
 ## *Changes*: Added data lineage tracking fields to all Silver layer tables
 ## *Reason*: For better traceability and data governance
 _____________________________________________
@@ -412,6 +412,8 @@ Note: Actual costs may vary based on:
 - Processing frequency
 - Geographic region
 - Optimization strategies implemented
+
+apiCost: 0.125000
 */
 
 -- =============================================================================
