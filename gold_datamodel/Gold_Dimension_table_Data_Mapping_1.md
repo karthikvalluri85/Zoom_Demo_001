@@ -32,7 +32,7 @@ This document provides comprehensive data mapping specifications for Gold layer 
 ### 1. User Dimension (SCD Type 2)
 
 | Target Layer | Target Table | Target Field | Source Layer | Source Table | Source Field | Transformation Rule |
-|--------------|--------------|--------------|--------------|--------------|--------------|--------------------|
+|--------------|--------------|--------------|--------------|--------------|--------------|---------------------|
 | Gold | go_user_dimension | user_sk | Gold | SEQUENCE | user_dimension_seq.NEXTVAL | Surrogate key using Snowflake sequence |
 | Gold | go_user_dimension | user_id | Silver | si_users | user_id | Direct mapping with validation: COALESCE(user_id, 'UNKNOWN') |
 | Gold | go_user_dimension | email_address | Silver | si_users | email | Email standardization: LOWER(TRIM(email)) with REGEXP validation |
@@ -51,7 +51,7 @@ This document provides comprehensive data mapping specifications for Gold layer 
 ### 2. Account Dimension (SCD Type 2)
 
 | Target Layer | Target Table | Target Field | Source Layer | Source Table | Source Field | Transformation Rule |
-|--------------|--------------|--------------|--------------|--------------|--------------|--------------------|
+|--------------|--------------|--------------|--------------|--------------|--------------|---------------------|
 | Gold | go_account_dimension | account_sk | Gold | SEQUENCE | account_dimension_seq.NEXTVAL | Surrogate key using Snowflake sequence |
 | Gold | go_account_dimension | account_id | Silver | si_users | company | Account ID derivation: MD5(UPPER(TRIM(COALESCE(company, 'INDIVIDUAL')))) |
 | Gold | go_account_dimension | account_name | Silver | si_users | company | Account name: INITCAP(TRIM(COALESCE(company, 'Individual Account'))) |
@@ -69,7 +69,7 @@ This document provides comprehensive data mapping specifications for Gold layer 
 ### 3. Time Dimension (SCD Type 1)
 
 | Target Layer | Target Table | Target Field | Source Layer | Source Table | Source Field | Transformation Rule |
-|--------------|--------------|--------------|--------------|--------------|--------------|--------------------|
+|--------------|--------------|--------------|--------------|--------------|--------------|---------------------|
 | Gold | go_time_dimension | time_sk | Gold | SEQUENCE | time_dimension_seq.NEXTVAL | Surrogate key using Snowflake sequence |
 | Gold | go_time_dimension | date_key | Gold | Derived | DATE_RANGE | Date key: TO_NUMBER(TO_CHAR(date_value, 'YYYYMMDD')) |
 | Gold | go_time_dimension | full_date | Gold | Derived | DATE_RANGE | Full date: Generated date value |
@@ -91,7 +91,7 @@ This document provides comprehensive data mapping specifications for Gold layer 
 ### 4. License Dimension (SCD Type 2)
 
 | Target Layer | Target Table | Target Field | Source Layer | Source Table | Source Field | Transformation Rule |
-|--------------|--------------|--------------|--------------|--------------|--------------|--------------------|
+|--------------|--------------|--------------|--------------|--------------|--------------|---------------------|
 | Gold | go_license_dimension | license_sk | Gold | SEQUENCE | license_dimension_seq.NEXTVAL | Surrogate key using Snowflake sequence |
 | Gold | go_license_dimension | license_id | Silver | si_licenses | license_id | Direct mapping: COALESCE(license_id, UUID_STRING()) |
 | Gold | go_license_dimension | license_type_code | Silver | si_licenses | license_type | License type standardization: UPPER(TRIM(COALESCE(license_type, 'UNKNOWN'))) |
@@ -110,7 +110,7 @@ This document provides comprehensive data mapping specifications for Gold layer 
 ### 5. Meeting Types Dimension
 
 | Target Layer | Target Table | Target Field | Source Layer | Source Table | Source Field | Transformation Rule |
-|--------------|--------------|--------------|--------------|--------------|--------------|--------------------|
+|--------------|--------------|--------------|--------------|--------------|--------------|---------------------|
 | Gold | go_meeting_types | meeting_type_sk | Gold | SEQUENCE | meeting_type_seq.NEXTVAL | Surrogate key using Snowflake sequence |
 | Gold | go_meeting_types | meeting_type_code | Silver | si_meetings | meeting_topic | Meeting type classification: CASE WHEN UPPER(meeting_topic) LIKE '%STANDUP%' OR UPPER(meeting_topic) LIKE '%DAILY%' THEN 'STANDUP' WHEN UPPER(meeting_topic) LIKE '%REVIEW%' OR UPPER(meeting_topic) LIKE '%RETROSPECTIVE%' THEN 'REVIEW' WHEN UPPER(meeting_topic) LIKE '%TRAINING%' OR UPPER(meeting_topic) LIKE '%WORKSHOP%' THEN 'TRAINING' WHEN UPPER(meeting_topic) LIKE '%INTERVIEW%' THEN 'INTERVIEW' WHEN UPPER(meeting_topic) LIKE '%DEMO%' OR UPPER(meeting_topic) LIKE '%PRESENTATION%' THEN 'PRESENTATION' ELSE 'GENERAL' END |
 | Gold | go_meeting_types | meeting_type_name | Gold | Derived | meeting_type_code | Meeting type name: CASE WHEN meeting_type_code = 'STANDUP' THEN 'Daily Standup' WHEN meeting_type_code = 'REVIEW' THEN 'Review Meeting' WHEN meeting_type_code = 'TRAINING' THEN 'Training Session' WHEN meeting_type_code = 'INTERVIEW' THEN 'Interview' WHEN meeting_type_code = 'PRESENTATION' THEN 'Presentation/Demo' ELSE 'General Meeting' END |
@@ -124,7 +124,7 @@ This document provides comprehensive data mapping specifications for Gold layer 
 ### 6. Feature Categories Dimension
 
 | Target Layer | Target Table | Target Field | Source Layer | Source Table | Source Field | Transformation Rule |
-|--------------|--------------|--------------|--------------|--------------|--------------|--------------------|
+|--------------|--------------|--------------|--------------|--------------|--------------|---------------------|
 | Gold | go_feature_categories | feature_category_sk | Gold | SEQUENCE | feature_category_seq.NEXTVAL | Surrogate key using Snowflake sequence |
 | Gold | go_feature_categories | feature_name | Silver | si_feature_usage | feature_name | Feature name standardization: UPPER(TRIM(COALESCE(feature_name, 'UNKNOWN'))) |
 | Gold | go_feature_categories | feature_category_code | Silver | si_feature_usage | feature_name | Feature categorization: CASE WHEN UPPER(feature_name) LIKE '%VIDEO%' OR UPPER(feature_name) LIKE '%CAMERA%' THEN 'VIDEO' WHEN UPPER(feature_name) LIKE '%AUDIO%' OR UPPER(feature_name) LIKE '%MIC%' OR UPPER(feature_name) LIKE '%SOUND%' THEN 'AUDIO' WHEN UPPER(feature_name) LIKE '%SCREEN%' OR UPPER(feature_name) LIKE '%SHARE%' THEN 'SCREEN_SHARING' WHEN UPPER(feature_name) LIKE '%CHAT%' OR UPPER(feature_name) LIKE '%MESSAGE%' THEN 'CHAT' WHEN UPPER(feature_name) LIKE '%RECORD%' THEN 'RECORDING' WHEN UPPER(feature_name) LIKE '%POLL%' OR UPPER(feature_name) LIKE '%SURVEY%' THEN 'ENGAGEMENT' WHEN UPPER(feature_name) LIKE '%BREAKOUT%' OR UPPER(feature_name) LIKE '%ROOM%' THEN 'COLLABORATION' ELSE 'OTHER' END |
@@ -138,7 +138,7 @@ This document provides comprehensive data mapping specifications for Gold layer 
 ### 7. Geographic Regions Dimension
 
 | Target Layer | Target Table | Target Field | Source Layer | Source Table | Source Field | Transformation Rule |
-|--------------|--------------|--------------|--------------|--------------|--------------|--------------------|
+|--------------|--------------|--------------|--------------|--------------|--------------|---------------------|
 | Gold | go_geographic_regions | region_sk | Gold | SEQUENCE | geographic_region_seq.NEXTVAL | Surrogate key using Snowflake sequence |
 | Gold | go_geographic_regions | region_code | Silver | si_users | email | Region derivation from email domain: CASE WHEN UPPER(email) LIKE '%.COM' THEN 'NA' WHEN UPPER(email) LIKE '%.UK' OR UPPER(email) LIKE '%.EU' THEN 'EMEA' WHEN UPPER(email) LIKE '%.JP' OR UPPER(email) LIKE '%.CN' OR UPPER(email) LIKE '%.IN' THEN 'APAC' WHEN UPPER(email) LIKE '%.AU' OR UPPER(email) LIKE '%.NZ' THEN 'APAC' WHEN UPPER(email) LIKE '%.BR' OR UPPER(email) LIKE '%.MX' THEN 'LATAM' ELSE 'OTHER' END |
 | Gold | go_geographic_regions | region_name | Gold | Derived | region_code | Region name: CASE WHEN region_code = 'NA' THEN 'North America' WHEN region_code = 'EMEA' THEN 'Europe, Middle East & Africa' WHEN region_code = 'APAC' THEN 'Asia Pacific' WHEN region_code = 'LATAM' THEN 'Latin America' ELSE 'Other Regions' END |
