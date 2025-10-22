@@ -1,0 +1,411 @@
+# Author: AAVA
+# Version: 1
+# Gold Layer Logical Data Model for Zoom Platform Analytics System (Medallion Architecture)
+
+---
+
+## 1. Introduction
+This document details the Gold Layer Logical Data Model for the Zoom Platform Analytics System, following medallion architecture principles. The model is designed for advanced analytics, reporting, and business intelligence, ensuring data quality, integrity, and compliance. It incorporates process audit and error tracking structures, aligns with the Silver Layer, and supports scalable, governed analytics.
+
+---
+
+## 2. Table Classification & SCD Types
+| Table Name                | Classification | SCD Type | PII Classification | Description |
+|--------------------------|----------------|----------|--------------------|-------------|
+| Go_User_Dim              | Dimension      | Type 2   | Email (PII)        | User profile and account attributes with history tracking |
+| Go_Account_Dim           | Dimension      | Type 2   | None               | Account-level descriptive attributes |
+| Go_Meeting_Dim           | Dimension      | Type 2   | None               | Meeting descriptive attributes (topic, type, etc.) |
+| Go_Webinar_Dim           | Dimension      | Type 2   | None               | Webinar descriptive attributes |
+| Go_Device_Dim            | Dimension      | Type 2   | None               | Device descriptive/reference attributes |
+| Go_License_Dim           | Dimension      | Type 2   | None               | License type and assignment details |
+| Go_Content_Dim           | Dimension      | Type 2   | None               | Content library descriptive attributes |
+| Go_Feature_Dim           | Dimension      | Type 1   | None               | Platform feature reference table |
+| Go_SecurityPolicy_Dim    | Dimension      | Type 2   | None               | Security policy descriptive/reference attributes |
+| Go_Integration_Dim       | Dimension      | Type 2   | None               | External integration descriptive attributes |
+| Go_Time_Dim              | Dimension      | Type 1   | None               | Standardized time/date reference |
+| Go_Meeting_Fact          | Fact           | N/A      | None               | Transactional meeting events, aggregates, and metrics |
+| Go_Webinar_Fact          | Fact           | N/A      | None               | Transactional webinar events, aggregates, and metrics |
+| Go_Participant_Fact      | Fact           | N/A      | Email (PII)        | Participant engagement and session metrics |
+| Go_Feature_Usage_Fact    | Fact           | N/A      | None               | Feature usage metrics and aggregates |
+| Go_Billing_Fact          | Fact           | N/A      | None               | Billing and financial event aggregates |
+| Go_Support_Fact          | Fact           | N/A      | None               | Support ticket and resolution metrics |
+| Go_Analytics_Event_Fact  | Fact           | N/A      | None               | Platform analytics event aggregates |
+| Go_Report_Agg            | Aggregate      | N/A      | None               | Pre-aggregated reporting metrics (e.g., daily/weekly/monthly) |
+| Go_Dashboard_Agg         | Aggregate      | N/A      | None               | Pre-aggregated dashboard metrics |
+| Go_Process_Audit         | Audit          | N/A      | None               | Process audit trail for pipeline execution |
+| Go_Data_Quality_Error    | Error          | N/A      | None               | Data validation and quality error tracking |
+
+---
+
+## 3. Gold Layer Logical Data Model (Table Definitions)
+
+### 3.1 Dimensions
+#### Go_User_Dim (Type 2, PII: Email)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| email              | STRING      | User email address (PII)           |
+| user_name          | STRING      | User display name                  |
+| plan_type          | STRING      | Subscription plan                  |
+| company            | STRING      | Company/organization               |
+| status             | STRING      | User status (Active, Inactive)     |
+| effective_start    | DATE        | SCD2: Row effective start date     |
+| effective_end      | DATE        | SCD2: Row effective end date       |
+| is_current         | BOOLEAN     | SCD2: Current record flag          |
+| load_date          | DATE        | Metadata: Load date                |
+| update_date        | DATE        | Metadata: Last update date         |
+| source_system      | STRING      | Metadata: Source system            |
+
+#### Go_Account_Dim (Type 2)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| account_name        | STRING      | Account name                       |
+| account_type        | STRING      | Account type (Business, Edu, etc.) |
+| region              | STRING      | Account region                     |
+| status              | STRING      | Account status                     |
+| effective_start     | DATE        | SCD2: Row effective start date     |
+| effective_end       | DATE        | SCD2: Row effective end date       |
+| is_current          | BOOLEAN     | SCD2: Current record flag          |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Meeting_Dim (Type 2)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| meeting_topic       | STRING      | Meeting topic/title                |
+| meeting_type        | STRING      | Meeting type (Scheduled, Recurring)|
+| host_email          | STRING      | Host user email (PII)              |
+| recurrence_pattern  | STRING      | Recurrence pattern                 |
+| status              | STRING      | Meeting status                     |
+| effective_start     | DATE        | SCD2: Row effective start date     |
+| effective_end       | DATE        | SCD2: Row effective end date       |
+| is_current          | BOOLEAN     | SCD2: Current record flag          |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Webinar_Dim (Type 2)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| webinar_topic       | STRING      | Webinar topic/title                |
+| host_email          | STRING      | Host user email (PII)              |
+| status              | STRING      | Webinar status                     |
+| effective_start     | DATE        | SCD2: Row effective start date     |
+| effective_end       | DATE        | SCD2: Row effective end date       |
+| is_current          | BOOLEAN     | SCD2: Current record flag          |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Device_Dim (Type 2)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| device_type         | STRING      | Device type (Desktop, Mobile, etc.)|
+| os_version          | STRING      | Operating system version           |
+| manufacturer        | STRING      | Device manufacturer                |
+| effective_start     | DATE        | SCD2: Row effective start date     |
+| effective_end       | DATE        | SCD2: Row effective end date       |
+| is_current          | BOOLEAN     | SCD2: Current record flag          |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_License_Dim (Type 2)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| license_type        | STRING      | License type (Basic, Pro, etc.)    |
+| start_date          | DATE        | License start date                 |
+| end_date            | DATE        | License end date                   |
+| status              | STRING      | License status                     |
+| effective_start     | DATE        | SCD2: Row effective start date     |
+| effective_end       | DATE        | SCD2: Row effective end date       |
+| is_current          | BOOLEAN     | SCD2: Current record flag          |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Content_Dim (Type 2)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| content_type        | STRING      | Content type (Recording, File, etc.)|
+| content_name        | STRING      | Content name                       |
+| owner_email         | STRING      | Content owner email (PII)          |
+| status              | STRING      | Content status                     |
+| effective_start     | DATE        | SCD2: Row effective start date     |
+| effective_end       | DATE        | SCD2: Row effective end date       |
+| is_current          | BOOLEAN     | SCD2: Current record flag          |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Feature_Dim (Type 1)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| feature_name        | STRING      | Feature name                       |
+| feature_category    | STRING      | Feature category                   |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_SecurityPolicy_Dim (Type 2)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| policy_name         | STRING      | Security policy name               |
+| policy_type         | STRING      | Policy type                        |
+| status              | STRING      | Policy status                      |
+| effective_start     | DATE        | SCD2: Row effective start date     |
+| effective_end       | DATE        | SCD2: Row effective end date       |
+| is_current          | BOOLEAN     | SCD2: Current record flag          |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Integration_Dim (Type 2)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| integration_name    | STRING      | Integration name                   |
+| integration_type    | STRING      | Integration type                   |
+| status              | STRING      | Integration status                 |
+| effective_start     | DATE        | SCD2: Row effective start date     |
+| effective_end       | DATE        | SCD2: Row effective end date       |
+| is_current          | BOOLEAN     | SCD2: Current record flag          |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Time_Dim (Type 1)
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| date_value          | DATE        | Calendar date                      |
+| year                | INTEGER     | Year                               |
+| month               | INTEGER     | Month                              |
+| day                 | INTEGER     | Day                                |
+| week                | INTEGER     | Week number                        |
+| quarter             | INTEGER     | Quarter                            |
+| day_of_week         | INTEGER     | Day of week                        |
+| is_weekend          | BOOLEAN     | Weekend flag                       |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+### 3.2 Facts
+#### Go_Meeting_Fact
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| meeting_topic       | STRING      | Meeting topic (FK to Dim)          |
+| start_time          | TIMESTAMP   | Meeting start time                 |
+| end_time            | TIMESTAMP   | Meeting end time                   |
+| duration_minutes    | INTEGER     | Meeting duration (0-2880)          |
+| participant_count   | INTEGER     | Number of participants (1-10000)   |
+| quality_score       | DECIMAL(6,3)| Meeting quality score (0.000-100.000) |
+| host_email          | STRING      | Host user email (PII)              |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Webinar_Fact
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| webinar_topic       | STRING      | Webinar topic (FK to Dim)          |
+| start_time          | TIMESTAMP   | Webinar start time                 |
+| end_time            | TIMESTAMP   | Webinar end time                   |
+| registrant_count    | INTEGER     | Number of registrants              |
+| attendee_count      | INTEGER     | Number of attendees                |
+| host_email          | STRING      | Host user email (PII)              |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Participant_Fact
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| meeting_topic       | STRING      | Meeting topic (FK to Dim)          |
+| email              | STRING      | Participant email (PII)            |
+| join_time          | TIMESTAMP   | Join time                          |
+| leave_time         | TIMESTAMP   | Leave time                         |
+| engagement_score   | DECIMAL(5,2)| Engagement score                   |
+| device_type        | STRING      | Device used                        |
+| location           | STRING      | Participant location               |
+| load_date          | DATE        | Metadata: Load date                |
+| update_date        | DATE        | Metadata: Last update date         |
+| source_system      | STRING      | Metadata: Source system            |
+
+#### Go_Feature_Usage_Fact
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| feature_name        | STRING      | Feature name (FK to Dim)           |
+| usage_date          | DATE        | Usage date                         |
+| usage_count         | INTEGER     | Number of times used               |
+| user_email          | STRING      | User email (PII)                   |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Billing_Fact
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| event_type          | STRING      | Billing event type                 |
+| event_date          | DATE        | Event date                         |
+| amount              | DECIMAL(10,2)| Transaction amount                |
+| plan_type           | STRING      | Plan type                          |
+| company             | STRING      | Company                            |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Support_Fact
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| ticket_type         | STRING      | Ticket type                        |
+| open_date           | DATE        | Ticket open date                   |
+| resolution_status   | STRING      | Resolution status                  |
+| user_email          | STRING      | User email (PII)                   |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Analytics_Event_Fact
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| event_name          | STRING      | Analytics event name               |
+| event_date          | DATE        | Event date                         |
+| event_count         | INTEGER     | Number of events                   |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+### 3.3 Aggregate Tables
+#### Go_Report_Agg
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| report_name         | STRING      | Report name                        |
+| aggregation_level   | STRING      | Daily/Weekly/Monthly               |
+| metric_name         | STRING      | Metric name                        |
+| metric_value        | DECIMAL(18,4)| Aggregated metric value           |
+| aggregation_date    | DATE        | Aggregation date                   |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+#### Go_Dashboard_Agg
+| Column Name         | Data Type   | Description                        |
+|---------------------|------------|------------------------------------|
+| dashboard_name      | STRING      | Dashboard name                     |
+| metric_name         | STRING      | Metric name                        |
+| metric_value        | DECIMAL(18,4)| Aggregated metric value           |
+| aggregation_date    | DATE        | Aggregation date                   |
+| load_date           | DATE        | Metadata: Load date                |
+| update_date         | DATE        | Metadata: Last update date         |
+| source_system       | STRING      | Metadata: Source system            |
+
+### 3.4 Process Audit & Error Data Structures
+#### Go_Process_Audit
+| Column Name             | Data Type   | Description                        |
+|-------------------------|------------|------------------------------------|
+| pipeline_name           | STRING     | Name of the pipeline               |
+| execution_start_time    | TIMESTAMP  | Pipeline execution start           |
+| execution_end_time      | TIMESTAMP  | Pipeline execution end             |
+| execution_status        | STRING     | Status (Success, Failed, etc.)     |
+| records_processed       | INTEGER    | Number of records processed        |
+| records_inserted        | INTEGER    | Number of records inserted         |
+| records_updated         | INTEGER    | Number of records updated          |
+| records_rejected        | INTEGER    | Number of records rejected         |
+| error_count             | INTEGER    | Number of errors                   |
+| warning_count           | INTEGER    | Number of warnings                 |
+| data_volume_mb          | DECIMAL(10,2)| Data volume processed (MB)        |
+| pipeline_version        | STRING     | Pipeline version                   |
+| executed_by             | STRING     | User/system that executed          |
+| configuration_hash      | STRING     | Pipeline config hash               |
+| load_date               | DATE       | Metadata: Load date                |
+| update_date             | DATE       | Metadata: Last update date         |
+| source_system           | STRING     | Metadata: Source system            |
+
+#### Go_Data_Quality_Error
+| Column Name             | Data Type   | Description                        |
+|-------------------------|------------|------------------------------------|
+| error_timestamp         | TIMESTAMP  | Error detection timestamp          |
+| source_table            | STRING     | Source table name                  |
+| error_type              | STRING     | Error type                         |
+| error_description       | STRING     | Error description                  |
+| error_severity          | STRING     | Severity (Critical, High, etc.)    |
+| affected_records        | INTEGER    | Number of records affected         |
+| error_column            | STRING     | Column where error occurred        |
+| error_value             | STRING     | Value causing error                |
+| validation_rule         | STRING     | Validation rule violated           |
+| resolution_status       | STRING     | Error resolution status            |
+| load_date               | DATE       | Metadata: Load date                |
+| update_date             | DATE       | Metadata: Last update date         |
+| source_system           | STRING     | Metadata: Source system            |
+
+---
+
+## 4. Conceptual Data Model Diagram (Tabular)
+| Entity                | Description                                      |
+|-----------------------|--------------------------------------------------|
+| User                  | Platform user profile and account                |
+| Account               | Account/organization                            |
+| Meeting               | Meeting event                                    |
+| Webinar               | Webinar event                                    |
+| Participant           | Meeting/webinar participant                      |
+| Device                | Device used for session                          |
+| License               | License assignment                               |
+| Content Library       | Managed content (recordings, files, etc.)        |
+| Feature               | Platform feature                                 |
+| Security Policy       | Security/compliance policy                       |
+| Integration           | External system integration                      |
+| Analytics Event       | Platform analytics event                         |
+| Report                | Analytical report                                |
+| Dashboard             | Analytical dashboard                             |
+| Billing Event         | Financial/billing transaction                    |
+| Support Ticket        | Customer support ticket                          |
+| Audit Log             | System/process audit log                         |
+| Data Quality Error    | Data validation/quality error                    |
+| Time                  | Date/time reference                              |
+
+---
+
+## 5. ER Diagram (Block Diagram)
+```
+[Go_User_Dim]---[Go_Meeting_Fact]---[Go_Meeting_Dim]---[Go_Participant_Fact]---[Go_Device_Dim]
+      |                |                    |                     |
+      |                |                    |                     |
+[Go_Account_Dim]   [Go_License_Dim]    [Go_Feature_Usage_Fact]---[Go_Feature_Dim]
+      |                |                    |                     |
+      |                |                    |                     |
+[Go_Billing_Fact]  [Go_Support_Fact]   [Go_Analytics_Event_Fact]
+      |                |                    |                     |
+[Go_Report_Agg]    [Go_Dashboard_Agg]  [Go_Content_Dim]      [Go_SecurityPolicy_Dim]
+      |                |                    |                     |
+[Go_Integration_Dim] [Go_Webinar_Fact]---[Go_Webinar_Dim]
+      |
+[Go_Time_Dim]
+
+[Go_Process_Audit] and [Go_Data_Quality_Error] are linked to all tables for audit/error tracking.
+```
+
+---
+
+## 6. Rationale for Design Decisions
+- **Medallion Principles:** Gold Layer is optimized for analytics, aggregates, and reporting, using clean, conformed data from Silver.
+- **Classification:** Facts for transactional/metric tables, Dimensions for descriptive/reference, Aggregates for reporting, Audit/Error for governance.
+- **SCD Types:** Type 2 for history tracking (user, account, meeting, etc.), Type 1 for static reference (features, time).
+- **Metadata:** All tables include load_date, update_date, source_system for lineage and governance.
+- **PII:** Email fields are flagged as PII for compliance.
+- **Audit/Error:** Dedicated structures for process audit and error tracking, supporting data governance and traceability.
+- **No IDs:** No physical keys or IDs, as per requirements.
+- **Aggregate Tables:** Pre-aggregated tables for performance and reporting needs.
+- **Alignment:** Model aligns with Silver Layer and conceptual model, ensuring consistency and scalability.
+
+---
+
+## 7. Compliance & Data Governance
+- All PII fields are clearly marked for compliance.
+- Data quality and audit structures ensure traceability and regulatory alignment.
+- SCD2 dimensions support historical analysis and regulatory reporting.
+
+---
+
+## 8. Version & Author
+- **Author:** AAVA
+- **Version:** 1
+- **Date:** [Auto-generated]
